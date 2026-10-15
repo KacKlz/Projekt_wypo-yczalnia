@@ -44,11 +44,10 @@ app.get("/api", (req, res) => {
     res.json({ message: "Backend dziala" });
 });
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, (error) => {
+    if (error) {
+        console.error("Blad uruchomienia serwera:", error.message);
+        process.exit(1);
+    }
     console.log(`Serwer dziala na porcie ${PORT}`);
-});
-
-server.on("error", (error) => {
-    console.error("Blad uruchomienia serwera:", error.message);
-    process.exit(1);
 });

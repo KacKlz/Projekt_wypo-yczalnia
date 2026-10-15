@@ -18,9 +18,19 @@ router.post("/register", async (req, res) => {
     try {
         const { email, haslo: password } = req.body;
 
-        if (!email || !password) {
+        if (typeof email !== "string" || typeof password !== "string") {
             return res.status(400).json({
-                message: "Email i haslo sa wymagane"
+                message: "Nieprawidlowe dane"
+            });
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(normalizedEmail)) {
+            return res.status(400).json({
+                message: "Nieprawidlowy adres email"
             });
         }
 
@@ -32,8 +42,6 @@ router.post("/register", async (req, res) => {
                 message: "Haslo musi zawierac wielka litere i znak specjalny"
             });
         }
-
-        const normalizedEmail = email.trim().toLowerCase();
 
         const existingUser = await User.findOne({
             email: normalizedEmail
@@ -71,9 +79,9 @@ router.post("/login", async (req, res) => {
     try {
         const { email, haslo: password } = req.body;
 
-        if (!email || !password) {
+        if (typeof email !== "string" || typeof password !== "string") {
             return res.status(400).json({
-                message: "Email i haslo sa wymagane"
+                message: "Nieprawidlowe dane"
             });
         }
 

@@ -18,10 +18,15 @@ async function seedAdmin() {
             process.exit(1);
         }
 
+        if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) {
+            console.error("Brak ADMIN_EMAIL lub ADMIN_PASSWORD w pliku .env");
+            process.exit(1);
+        }
+
         await mongoose.connect(process.env.MONGO_URI);
 
-        const email = "admin@example.com";
-        const password = "Admin123!";
+        const email = process.env.ADMIN_EMAIL.trim().toLowerCase();
+        const password = process.env.ADMIN_PASSWORD;
 
         const existingAdmin = await User.findOne({ email });
 
