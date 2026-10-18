@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Login from './Login';
 import Register from './Register';
@@ -6,6 +6,16 @@ import Register from './Register';
 function App() {
     const [widok, setWidok] = useState('login');
     const [uzytkownik, setUzytkownik] = useState(null);
+    const [isCheckingSession, setIsCheckingSession] = useState(true);
+
+    // After a page refresh, ask the backend who is logged in (based on the session cookie)
+    useEffect(() => {
+        fetch('/api/auth/me')
+            .then((response) => (response.ok ? response.json() : null))
+            .then((user) => setUzytkownik(user))
+            .catch(() => setUzytkownik(null))
+            .finally(() => setIsCheckingSession(false));
+    }, []);
 
     const handleLoginSuccess = (user) => {
         setUzytkownik(user);
@@ -20,6 +30,15 @@ function App() {
         }
         setUzytkownik(null);
     };
+
+    // Wait for the session check, so the login form does not flash for a logged-in user
+    if (isCheckingSession) {
+        return (
+            <div className="aplikacja">
+                <Header />
+            </div>
+        );
+    }
 
     return (
         <div className="aplikacja">
