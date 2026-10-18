@@ -23,7 +23,7 @@ function App() {
             {uzytkownik ? (
                 <div className="srodkowa-czesc-strony">
                     <div className="pudelko-formularza" style={{ textAlign: 'center' }}>
-                        <h2>Cześć, {uzytkownik.imie}!</h2>
+                        <h2>Cześć, {uzytkownik.imie || 'Użytkownik'}!</h2>
                         <p style={{ margin: '1rem 0', color: '#94a3b8' }}>
                             Twoja rola: <strong style={{ color: uzytkownik.role === 'admin' ? '#3b82f6' : '#10b981' }}>{uzytkownik.role}</strong>
                         </p>

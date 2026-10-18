@@ -5,7 +5,7 @@ function Login({ onSwitchToRegister, onLoginSuccess }) {
     const [haslo, setHaslo] = useState('');
     const [komunikat, setKomunikat] = useState(null);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setKomunikat(null);
 
@@ -14,35 +14,29 @@ function Login({ onSwitchToRegister, onLoginSuccess }) {
             return;
         }
 
-        // 1. Sprawdzenie logowania na konto Admina
-        if (email === 'admin@gmail.com' && haslo === '123') {
-            const uzytkownik = {
-                email: email,
-                imie: 'Administrator',
-                role: 'admin'
-            };
-            localStorage.setItem('zalogowanyUzytkownik', JSON.stringify(uzytkownik));
-            if (onLoginSuccess) onLoginSuccess(uzytkownik);
-            return;
-        }
+        // Log in through the backend - on success it sets the session cookie
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, haslo })
+            });
+            const data = await response.json();
 
-        // 2. Pobranie bazy zarejestrowanych użytkowników z localStorage
-        const zarejestrowani = JSON.parse(localStorage.getItem('zarejestrowaniUzytkownicy') || '[]');
-        
-        // Szukamy użytkownika o podanym emailu i haśle
-        const znaleziony = zarejestrowani.find(u => u.email === email && u.haslo === haslo);
+            if (response.status === 401) {
+                // Blokada – użytkownik nie istnieje lub podał złe dane
+                setKomunikat({ typ: 'blad', tresc: 'Nieprawidłowy adres email lub hasło!' });
+                return;
+            }
 
-        if (znaleziony) {
-            const uzytkownik = {
-                email: znaleziony.email,
-                imie: 'Użytkownik',
-                role: 'user'
-            };
-            localStorage.setItem('zalogowanyUzytkownik', JSON.stringify(uzytkownik));
-            if (onLoginSuccess) onLoginSuccess(uzytkownik);
-        } else {
-            // Blokada – użytkownik nie istnieje lub podał złe dane
-            setKomunikat({ typ: 'blad', tresc: 'Nieprawidłowy adres email lub hasło!' });
+            if (!response.ok) {
+                setKomunikat({ typ: 'blad', tresc: data.message });
+                return;
+            }
+
+            if (onLoginSuccess) onLoginSuccess(data);
+        } catch {
+            setKomunikat({ typ: 'blad', tresc: 'Brak połączenia z serwerem!' });
         }
     };
 
