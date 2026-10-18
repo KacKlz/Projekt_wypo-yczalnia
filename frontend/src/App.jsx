@@ -11,9 +11,14 @@ function App() {
         setUzytkownik(user);
     };
 
-    const handleWyloguj = () => {
+    const handleWyloguj = async () => {
+        try {
+            // Remove the session cookie on the backend
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch {
+            // Log out in the app even if the server cannot be reached
+        }
         setUzytkownik(null);
-        localStorage.removeItem('zalogowanyUzytkownik');
     };
 
     return (
