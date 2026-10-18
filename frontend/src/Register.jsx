@@ -6,7 +6,7 @@ function Register({ onSwitchToLogin }) {
     const [powtorzHaslo, setPowtorzHaslo] = useState('');
     const [komunikat, setKomunikat] = useState(null);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setKomunikat(null);
 
@@ -42,18 +42,29 @@ function Register({ onSwitchToLogin }) {
             return;
         }
 
-        //zapis nowego użytkownika do symulowanej bazy danych w localStorage
-        const zarejestrowani = JSON.parse(localStorage.getItem('zarejestrowaniUzytkownicy') || '[]');
+        // Save the new user in the database through the backend
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, haslo })
+            });
+            const data = await response.json();
 
-        if (zarejestrowani.some(u => u.email === email)) {
-            setKomunikat({ typ: 'blad', tresc: 'Konto z tym adresem email już istnieje!' });
-            return;
+            if (response.status === 409) {
+                setKomunikat({ typ: 'blad', tresc: 'Konto z tym adresem email już istnieje!' });
+                return;
+            }
+
+            if (!response.ok) {
+                setKomunikat({ typ: 'blad', tresc: data.message });
+                return;
+            }
+
+            setKomunikat({ typ: 'sukces', tresc: 'Konto zostało pomyślnie utworzone! Możesz się teraz zalogować.' });
+        } catch {
+            setKomunikat({ typ: 'blad', tresc: 'Brak połączenia z serwerem!' });
         }
-
-        zarejestrowani.push({ email, haslo });
-        localStorage.setItem('zarejestrowaniUzytkownicy', JSON.stringify(zarejestrowani));
-
-        setKomunikat({ typ: 'sukces', tresc: 'Konto zostało pomyślnie utworzone! Możesz się teraz zalogować.' });
     };
 
     return (
