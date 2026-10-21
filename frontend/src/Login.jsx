@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { validateEmail } from './validation';
 
 function Login({ onSwitchToRegister, onLoginSuccess }) {
     const [email, setEmail] = useState('');
-    const [haslo, setHaslo] = useState('');
-    const [komunikat, setKomunikat] = useState(null);
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setKomunikat(null);
+        setMessage(null);
 
-        if (!email || !haslo) {
-            setKomunikat({ typ: 'blad', tresc: 'Wypełnij pola email i hasło!' });
+        if (!email || !password) {
+            setMessage({ type: 'error', text: 'Please fill in both email and password!' });
+            return;
+        }
+
+        const emailError = validateEmail(email);
+        if (emailError) {
+            setMessage({ type: 'error', text: emailError });
             return;
         }
 
@@ -19,69 +26,69 @@ function Login({ onSwitchToRegister, onLoginSuccess }) {
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, haslo })
+                body: JSON.stringify({ email, haslo: password })
             });
             const data = await response.json();
 
             if (response.status === 401) {
-                // Blokada – użytkownik nie istnieje lub podał złe dane
-                setKomunikat({ typ: 'blad', tresc: 'Nieprawidłowy adres email lub hasło!' });
+                // Block - user does not exist or provided invalid credentials
+                setMessage({ type: 'error', text: 'Invalid email or password!' });
                 return;
             }
 
             if (!response.ok) {
-                setKomunikat({ typ: 'blad', tresc: data.message });
+                setMessage({ type: 'error', text: data.message });
                 return;
             }
 
             if (onLoginSuccess) onLoginSuccess(data);
         } catch {
-            setKomunikat({ typ: 'blad', tresc: 'Brak połączenia z serwerem!' });
+            setMessage({ type: 'error', text: 'No connection to the server!' });
         }
     };
 
     return (
-        <div className="srodkowa-czesc-strony">
-            <div className="pudelko-formularza">
-                <div className="naglowek-formularza">
-                    <h2>Zaloguj się</h2>
-                    <p>Wprowadź swoje dane, aby uzyskać dostęp do floty</p>
+        <div className="main-content">
+            <div className="form-box">
+                <div className="form-header">
+                    <h2>Sign In</h2>
+                    <p>Enter your details to access the fleet</p>
                 </div>
 
-                {komunikat && (
-                    <div className={komunikat.typ === 'blad' ? 'komunikat-blad' : 'komunikat-sukces'}>
-                        {komunikat.tresc}
+                {message && (
+                    <div className={message.type === 'error' ? 'message-error' : 'message-success'}>
+                        {message.text}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="pole-do-wpisania">
-                        <label>Adres Email</label>
+                    <div className="form-field">
+                        <label>Email Address</label>
                         <input 
                             type="email" 
-                            placeholder="jan.kowalski@example.com"
+                            placeholder="userEmail@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
 
-                    <div className="pole-do-wpisania">
-                        <label>Hasło</label>
+                    <div className="form-field">
+                        <label>Password</label>
                         <input 
                             type="password" 
                             placeholder="******"
-                            value={haslo}
-                            onChange={(e) => setHaslo(e.target.value)}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
 
-                    <button type="submit" className="przycisk-glowny">Zaloguj się</button>
+                    <button type="submit" className="btn-primary">Sign In</button>
                 </form>
 
-                <div className="stopka-formularza">
-                    <span>Nie masz konta? </span>
-                    <button type="button" className="przycisk-link" onClick={onSwitchToRegister}>
-                        Zarejestruj się
+                <div className="form-footer">
+                    <span>Don't have an account? </span>
+                    <button type="button" className="btn-link" onClick={onSwitchToRegister}>
+                        Sign Up
                     </button>
                 </div>
             </div>

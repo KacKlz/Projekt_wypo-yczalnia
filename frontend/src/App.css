@@ -11,13 +11,13 @@ body {
     min-height: 100vh;
 }
 
-.aplikacja {
+.app {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-.pasek-naglowka {
+.header-bar {
     position: sticky;
     top: 0;
     z-index: 50;
@@ -30,13 +30,13 @@ body {
     align-items: center;
 }
 
-.kontener-logo {
+.logo-container {
     display: flex;
     align-items: center;
     gap: 1.25rem;
 }
 
-.ikona-logo-obrazek {
+.logo-image {
     height: 52px;
     width: auto;
     object-fit: contain;
@@ -44,7 +44,7 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-.napis-tytul {
+.title-text {
     font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -52,7 +52,7 @@ body {
     text-transform: uppercase;
 }
 
-.srodkowa-czesc-strony {
+.main-content {
     flex: 1;
     display: flex;
     align-items: center;
@@ -60,7 +60,7 @@ body {
     padding: 2rem 1rem;
 }
 
-.pudelko-formularza {
+.form-box {
     background: #151e32;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
@@ -70,37 +70,37 @@ body {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
-.naglowek-formularza {
+.form-header {
     text-align: center;
     margin-bottom: 1.75rem;
 }
 
-.naglowek-formularza h2 {
+.form-header h2 {
     font-size: 1.5rem;
     font-weight: 700;
     color: #ffffff;
     margin-bottom: 0.5rem;
 }
 
-.naglowek-formularza p {
+.form-header p {
     font-size: 0.875rem;
     color: #94a3b8;
 }
 
-.pole-do-wpisania {
+.form-field {
     margin-bottom: 1.25rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.pole-do-wpisania label {
+.form-field label {
     font-size: 0.875rem;
     font-weight: 600;
     color: #cbd5e1;
 }
 
-.pole-do-wpisania input {
+.form-field input {
     width: 100%;
     padding: 0.75rem 1rem;
     background: #0b1120;
@@ -112,11 +112,11 @@ body {
     transition: border-color 0.2s;
 }
 
-.pole-do-wpisania input:focus {
+.form-field input:focus {
     border-color: #3b82f6;
 }
 
-.przycisk-glowny {
+.btn-primary {
     width: 100%;
     padding: 0.85rem;
     background: #3b82f6;
@@ -130,18 +130,18 @@ body {
     margin-top: 0.5rem;
 }
 
-.przycisk-glowny:hover {
+.btn-primary:hover {
     background: #2563eb;
 }
 
-.stopka-formularza {
+.form-footer {
     margin-top: 1.5rem;
     text-align: center;
     font-size: 0.875rem;
     color: #94a3b8;
 }
 
-.przycisk-link {
+.btn-link {
     background: none;
     border: none;
     color: #3b82f6;
@@ -151,11 +151,11 @@ body {
     margin-left: 0.25rem;
 }
 
-.przycisk-link:hover {
+.btn-link:hover {
     text-decoration: underline;
 }
 
-.komunikat-blad {
+.message-error {
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid #ef4444;
     color: #fca5a5;
@@ -166,7 +166,7 @@ body {
     text-align: center;
 }
 
-.komunikat-sukces {
+.message-success {
     background: rgba(16, 185, 129, 0.15);
     border: 1px solid #10b981;
     color: #6ee7b7;

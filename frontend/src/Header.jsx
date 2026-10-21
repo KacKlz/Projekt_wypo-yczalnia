@@ -1,15 +1,15 @@
-import logoObrazek from './assets/CarLogo.png';
+import logoImage from './assets/CarLogo.png';
 
 function Header() {
     return (
-        <header className="pasek-naglowka">
-            <div className="kontener-logo">
+        <header className="header-bar">
+            <div className="logo-container">
                 <img 
-                    src={logoObrazek} 
-                    alt="Logo Wypożyczalnia Samochodów" 
-                    className="ikona-logo-obrazek" 
+                    src={logoImage} 
+                    alt="Car Rental Logo" 
+                    className="logo-image" 
                 />
-                <h1 className="napis-tytul">Cars-rent.pl</h1>
+                <h1 className="title-text">Cars-rent.pl</h1>
             </div>
         </header>
     );

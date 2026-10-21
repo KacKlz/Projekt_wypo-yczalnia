@@ -1,18 +1,31 @@
-// Sprawdzamy czy wpisany tekst w polu email zawiera znak '@'
-export const sprawdzCzyEmailMaMalpe = (wpisanyEmail) => {
-    if (!wpisanyEmail.includes('@')) {
-        return "Adres email musi zawierać znak '@'.";
+// Validate email format
+export const validateEmail = (email) => {
+    if (!email || !email.includes('@')) {
+        return "Email address must contain '@'.";
     }
     return null;
 };
 
-// Sprawdzamy czy haslo zawiera znak specjalny oraz duza literke
-export const sprawdzWymogiHasla = (wpisaneHaslo) => {
-    const czyMaDuzaLitere = /[A-Z]/.test(wpisaneHaslo);
-    const czyMaZnakSpecjalny = /[!@#$%^&*(),.?":{}|<>]/.test(wpisaneHaslo);
-
-    if (!czyMaDuzaLitere || !czyMaZnakSpecjalny) {
-        return "Hasło musi zawierać co najmniej jedną wielką literę i jeden znak specjalny.";
+// Validate password match
+export const validatePasswordMatch = (password, repeatPassword) => {
+    if (password !== repeatPassword) {
+        return 'Passwords do not match!';
     }
+    return null;
+};
+
+// Validate password security requirements (uppercase letter and special character)
+export const validatePassword = (password) => {
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasSpecialChar = /[^a-zA-Z0-9]/.test(password);
+
+    if (!hasUppercase) {
+        return 'Password must contain at least one uppercase letter!';
+    }
+
+    if (!hasSpecialChar) {
+        return 'Password must contain at least one special character (e.g. !, @, #)!';
+    }
+
     return null;
 };

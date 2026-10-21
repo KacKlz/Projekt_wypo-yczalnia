@@ -1,44 +1,40 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { validateEmail, validatePassword, validatePasswordMatch } from './validation';
 
 function Register({ onSwitchToLogin }) {
     const [email, setEmail] = useState('');
-    const [haslo, setHaslo] = useState('');
-    const [powtorzHaslo, setPowtorzHaslo] = useState('');
-    const [komunikat, setKomunikat] = useState(null);
+    const [password, setPassword] = useState('');
+    const [repeatPassword, setRepeatPassword] = useState('');
+    const [message, setMessage] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setKomunikat(null);
+        setMessage(null);
 
-        //sprawdzenie pustych pól
-        if (!email || !haslo || !powtorzHaslo) {
-            setKomunikat({ typ: 'blad', tresc: 'Wypełnij wszystkie pola!' });
+        // Check for empty fields
+        if (!email || !password || !repeatPassword) {
+            setMessage({ type: 'error', text: 'Please fill in all fields!' });
             return;
         }
 
-        //sprawdzenie zgodności haseł
-        if (haslo !== powtorzHaslo) {
-            setKomunikat({ typ: 'blad', tresc: 'Hasła nie są identyczne!' });
+        // Validate email format
+        const emailError = validateEmail(email);
+        if (emailError) {
+            setMessage({ type: 'error', text: emailError });
             return;
         }
 
-        //walidacja wymogów bezpieczeństwa
-        const maDuzaLitere = /[A-Z]/.test(haslo);
-        const maZnakSpecjalny = /[^a-zA-Z0-9]/.test(haslo);
-
-        if (!maDuzaLitere) {
-            setKomunikat({ 
-                typ: 'blad', 
-                tresc: 'Hasło musi zawierać przynajmniej jedną dużą literę!' 
-            });
+        // Validate password match
+        const matchError = validatePasswordMatch(password, repeatPassword);
+        if (matchError) {
+            setMessage({ type: 'error', text: matchError });
             return;
         }
 
-        if (!maZnakSpecjalny) {
-            setKomunikat({ 
-                typ: 'blad', 
-                tresc: 'Hasło musi zawierać przynajmniej jeden znak specjalny (np. !, @, #)!' 
-            });
+        // Validate password security requirements
+        const passwordError = validatePassword(password);
+        if (passwordError) {
+            setMessage({ type: 'error', text: passwordError });
             return;
         }
 
@@ -47,78 +43,78 @@ function Register({ onSwitchToLogin }) {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, haslo })
+                body: JSON.stringify({ email, haslo: password })
             });
             const data = await response.json();
 
             if (response.status === 409) {
-                setKomunikat({ typ: 'blad', tresc: 'Konto z tym adresem email już istnieje!' });
+                setMessage({ type: 'error', text: 'An account with this email address already exists!' });
                 return;
             }
 
             if (!response.ok) {
-                setKomunikat({ typ: 'blad', tresc: data.message });
+                setMessage({ type: 'error', text: data.message });
                 return;
             }
 
-            setKomunikat({ typ: 'sukces', tresc: 'Konto zostało pomyślnie utworzone! Możesz się teraz zalogować.' });
+            setMessage({ type: 'success', text: 'Account created successfully! You can now sign in.' });
         } catch {
-            setKomunikat({ typ: 'blad', tresc: 'Brak połączenia z serwerem!' });
+            setMessage({ type: 'error', text: 'No connection to the server!' });
         }
     };
 
     return (
-        <div className="srodkowa-czesc-strony">
-            <div className="pudelko-formularza">
-                <div className="naglowek-formularza">
-                    <h2>Zarejestruj się</h2>
-                    <p>Utwórz konto, aby rezerwować samochody</p>
+        <div className="main-content">
+            <div className="form-box">
+                <div className="form-header">
+                    <h2>Sign Up</h2>
+                    <p>Create an account to book vehicles</p>
                 </div>
 
-                {komunikat && (
-                    <div className={komunikat.typ === 'blad' ? 'komunikat-blad' : 'komunikat-sukces'}>
-                        {komunikat.tresc}
+                {message && (
+                    <div className={message.type === 'error' ? 'message-error' : 'message-success'}>
+                        {message.text}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="pole-do-wpisania">
-                        <label>Adres Email</label>
+                    <div className="form-field">
+                        <label>Email Address</label>
                         <input 
                             type="email" 
-                            placeholder="jan.kowalski@example.com"
+                            placeholder="userEmail@example.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
 
-                    <div className="pole-do-wpisania">
-                        <label>Hasło</label>
+                    <div className="form-field">
+                        <label>Password</label>
                         <input 
                             type="password" 
                             placeholder="******"
-                            value={haslo}
-                            onChange={(e) => setHaslo(e.target.value)}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
 
-                    <div className="pole-do-wpisania">
-                        <label>Powtórz Hasło</label>
+                    <div className="form-field">
+                        <label>Repeat Password</label>
                         <input 
                             type="password" 
                             placeholder="******"
-                            value={powtorzHaslo}
-                            onChange={(e) => setPowtorzHaslo(e.target.value)}
+                            value={repeatPassword}
+                            onChange={(e) => setRepeatPassword(e.target.value)}
                         />
                     </div>
 
-                    <button type="submit" className="przycisk-glowny">Zarejestruj się</button>
+                    <button type="submit" className="btn-primary">Sign Up</button>
                 </form>
 
-                <div className="stopka-formularza">
-                    <span>Masz już konto? </span>
-                    <button type="button" className="przycisk-link" onClick={onSwitchToLogin}>
-                        Zaloguj się
+                <div className="form-footer">
+                    <span>Already have an account? </span>
+                    <button type="button" className="btn-link" onClick={onSwitchToLogin}>
+                        Sign In
                     </button>
                 </div>
             </div>
